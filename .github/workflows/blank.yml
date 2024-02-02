@@ -1,0 +1,38 @@
+name: CI
+on:
+  workflow_dispatch:
+    inputs:
+      deploy_env:
+        type: string
+        default: int30
+# env:
+#   GITHUB_WORKSPACE: /runner/_work/xyz
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        # defaults:
+        #   run:
+        #     working-directory: /runner/_work/xyz
+        #strategy: 
+         #   matrix:
+          #      node-version: [12.x]
+        steps:
+          - name: Checkout
+            uses: actions/checkout@v3
+          - name: Set up AWS credentials
+            uses: aws-actions/configure-aws-credentials@v2
+            with:
+              aws-access-key-id: ASIAXEFPMSBJPBAMRTXJ
+              aws-secret-access-key: dO1A01SBacSyOO41HJwTvhQseXUncRY5Px/p47Rr
+              aws-region: us-west-2
+          - name: docker build
+            run: |
+              ENV=${{ inputs.deploy_env }}-rm
+              echo "ENV: $ENV" #int30-rm
+              ENV="${{ inputs.deploy_env }}-rm"
+              echo "ENV: $ENV" #int30-rm
+
+              BMAPIID=$(aws cloudformation describe-stacks --stack-name ${{ inputs.deploy_env }}-rm --query 'Stacks[*].Outputs[?OutputKey==`bucketname`]'.OutputValue --output text)
+              echo "BMAPIID : $BMAPIID"
+              BMAPIID=$(aws cloudformation describe-stacks --stack-name "${{ inputs.deploy_env }}-rm" --query 'Stacks[*].Outputs[?OutputKey==`bucketname`]'.OutputValue --output text)
+              echo "BMAPIID : $BMAPIID"
