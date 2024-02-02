@@ -22,8 +22,8 @@ jobs:
           - name: Set up AWS credentials
             uses: aws-actions/configure-aws-credentials@v2
             with:
-              aws-access-key-id: ASIAXEFPMSBJPBAMRTXJ
-              aws-secret-access-key: dO1A01SBacSyOO41HJwTvhQseXUncRY5Px/p47Rr
+              aws-access-key-id: ASIAXEFPMSBJGIXJHT3L
+              aws-secret-access-key: ZQKOusCMEvK+nEf/BT1iCzeOMPXbpUuIREkA/B89
               aws-region: us-west-2
           - name: docker build
             run: |
