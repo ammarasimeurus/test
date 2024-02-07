@@ -12,8 +12,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
 
       - name: Run tests
         run: |
@@ -24,5 +22,5 @@ jobs:
         if: ${{ inputs.deploy_env }} == 'int30'
         run: |
           # Your deployment steps to staging environment
-          echo "Deploying to staging..."
+          echo "Deploying to staging...${{ inputs.deploy_env }}"
 
