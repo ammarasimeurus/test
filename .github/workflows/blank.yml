@@ -18,7 +18,7 @@ jobs:
           echo "Running tests..."
 
       - name: Deploy to staging
-        if: ${{ inputs.deploy_env }} == 'int30'
+        if: ${{ inputs.deploy_env == 'int30' }}
         run: |
           # Your deployment steps to staging environment
           echo "Deploying to staging...${{ inputs.deploy_env }}"
