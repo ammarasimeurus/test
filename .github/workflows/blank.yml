@@ -1,18 +1,17 @@
 name: CI
+
 on:
   workflow_dispatch:
     inputs:
       deploy_env:
         type: string
-        default: int30
-# env:
-#   GITHUB_WORKSPACE: /runner/_work/xyz
+        default: int302
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Run tests
         run: |
           # Your test commands here
@@ -23,4 +22,3 @@ jobs:
         run: |
           # Your deployment steps to staging environment
           echo "Deploying to staging...${{ inputs.deploy_env }}"
-
