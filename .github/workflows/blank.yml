@@ -8,32 +8,21 @@ on:
 # env:
 #   GITHUB_WORKSPACE: /runner/_work/xyz
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        # defaults:
-        #   run:
-        #     working-directory: /runner/_work/xyz
-        #strategy: 
-         #   matrix:
-          #      node-version: [12.x]
-        steps:
-          - name: Checkout
-            uses: actions/checkout@v3
-          - name: Set up AWS credentials
-            uses: aws-actions/configure-aws-credentials@v2
-            with:
-              aws-access-key-id: ASIAXEFPMSBJGIXJHT3L
-              aws-secret-access-key: ZQKOusCMEvK+nEf/BT1iCzeOMPXbpUuIREkA/B89
-              aws-session-token: IQoJb3JpZ2luX2VjEJr//////////wEaCXVzLWVhc3QtMSJGMEQCIA9Mc5sIIrUd8seE9hiFnCTzDVN+v3b0BF33r/RhY+daAiB0q7XlUhJRH9ooW/tyd9CSrPMpoDHncfftAOpqyudjfirxAghjEAIaDDQ4OTk5NDA5NjcyMiIM7Uly2O+cK77n4NEOKs4CkD1sXVOVjoF4JXREij1YRXYKbSkMFbjHdjloOnnA2jvmqIVBzw6DPqJ2lw0ydJ6ZIczicSnz1Z0b6ItHFrJ0Xij1YpyxCr9+UOz2jOqtPcKnqcMNT81jkhZz81RWr3K7mwN6pLej9GAqdd2f/Tk8JzHaXqd3Ge9tmLckNSbkYDmyGQnyWc8QMNQIldM2EZ34uqq0m7ik/dZ8gIUBhSJh+7h0hJsCYvsqq0P3y0P8NVEwrDjCmtStSp9IEsuzQKHOlss8i+rEcJCAUr+b1k/Y06ONTxQMsCB4ETP3W7hqJX5DmjzdiWgP99Dw49grGwFVzeQTtAc9WumguEoCs7ejQtxfcbyXD6ATog7aP89VN6EmSANdAcVfyXMa0u4YpJltpdZiJQ5Ji+xN0ygqv/h345C91mGLCv/hldT/hgs7Lgr3tIBz16k/5phf+RjomDCK2PStBjqoAUqU4rupuf8CpnDvIz4MtgSP7LTSZsu3itksVETFevJullBzjCKFXgBiNXGUz6+8/22nCJP0FfGCIhlU3ULO6bngOoi8nyLTscCOus/XBbs4S9aW50ms/HYXQElbTgBqopXPP/CRD+qHb+u4RV+8apwczUSk2jZ6BkYfD5FEySO2ShzTZ9Xs8hoZgh5uLYH/YmLgvSTSO9Tdm30gpuznczkIq+odoK+NLQ==
-              aws-region: us-west-2
-          - name: docker build
-            run: |
-              ENV=${{ inputs.deploy_env }}-rm
-              echo "ENV: $ENV" #int30-rm
-              ENV="${{ inputs.deploy_env }}-rm"
-              echo "ENV: $ENV" #int30-rm
+  build:
+    runs-on: ubuntu-latest
 
-              BMAPIID=$(aws cloudformation describe-stacks --stack-name ${{ inputs.deploy_env }}-rm --query 'Stacks[*].Outputs[?OutputKey==`bucketname`]'.OutputValue --output text)
-              echo "BMAPIID : $BMAPIID"
-              BMAPIID=$(aws cloudformation describe-stacks --stack-name "${{ inputs.deploy_env }}-rm" --query 'Stacks[*].Outputs[?OutputKey==`bucketname`]'.OutputValue --output text)
-              echo "BMAPIID : $BMAPIID"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run tests
+        run: |
+          # Your test commands here
+          echo "Running tests..."
+
+      - name: Deploy to staging
+        if: ${{ inputs.deploy_env }} == 'int30'
+        run: |
+          # Your deployment steps to staging environment
+          echo "Deploying to staging..."
+
