@@ -8,17 +8,63 @@ on:
         default: int302
 
 jobs:
-  build:
+  start-runner:
+    name: Start self-hosted EC2 runner
     runs-on: ubuntu-latest
-
+    outputs:
+      label: ${{ steps.start-ec2-runner.outputs.label }}
+      ec2-instance-id: ${{ steps.start-ec2-runner.outputs.ec2-instance-id }}
     steps:
-      - name: Run tests
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ASIAXEFPMSBJOIOVUX6I
+          aws-secret-access-key: e6oK12WegGLq/a487ODG+JsQNNcWnjoI2/CiYwQZ
+          aws-session-token: IQoJb3JpZ2luX2VjELv//////////wEaCXVzLWVhc3QtMSJGMEQCIHMHhtU++pU5pkITXzTqD1ebffUw8tCQYqCB7sEzkL5qAiBxuHM1od3gRB/rDQrh13XZ5Upe4syS8ldWIji/bBQI1ir6AgiT//////////8BEAIaDDQ4OTk5NDA5NjcyMiIM+Bbhfjx17UnsF+lCKs4CMPkms2Ue0lUbBFi53FNW5rcRmAcLh25M0eZHNKGW4/csS8cGpIm+4M8ctUx9xE5txvnZ8cGjL0exe+7/2/cc3Z1qCGCa5zY4QiW+H4Csdd+tmKBWtvjBDM8IK2Gs3jMM+YLEUbRyqc1CbTNHFpdI0iQ8Y0qLVyZJxPKAFR8Xjo4OpTKSdHRUDRo2kr6Rs7uTpfuGV4s2ZR5jaingLILZbU+eKNyUmE+VzW+77cVyjfnY7SnCp8K2GT6pCa4QQ/C24yYg7863AuUpDujrXxwZI1JTLQBfna7W+e379rIMVF1mBDH0UCMQ7Y1gWPi1iWsS18+q/jui4/dEx2QMJWvXmVY3YzH3qAyYh3sLcfnsmL6gnWR+E9mNq5wGJFFnB2SD2A/WboJ+NvqjmmlNIXisMhSNB+uDkoOmsosw+kLIznC/LfloSczed2Aap0OZjTC/hbSuBjqoAUlgBPv0Cl4NYFpOLMBAA5BUbs0UvnGtEi4zZhWA+XO1iwEvIXEl7GnBIN5mwAyFMO0+pWCxetvTxGz8K1sW1H7T9bs2w7aL9cFQ9Msg2F86KsUgZ5ejpL180hBP5SboV1+NX8XX8GNNtS4XQ6M9VQuFcSrLT9G2/Ppej6W6pI1RGw+o6PYcjf9AJy1OvKQ2I3Gcv+DtMF7xgsAyPgOlbhaEEin5v8rnOQ==
+          aws-region: us-east-1
+      - name: Start EC2 runner
+        id: start-ec2-runner
+        uses: machulav/ec2-github-runner@v2
+        with:
+          mode: start
+          github-token: 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
+          ec2-image-id: ami-0c7217cdde317cfec
+          ec2-instance-type: t2.micro
+          subnet-id: subnet-0c54da15df80dd35e
+          security-group-id: sg-0ff2c80d935404c83
+          aws-resource-tags: > # optional, requires additional permissions
+            [
+              {"Key": "Name", "Value": "ec2-github-runner"}
+            ]
+  do-the-job:
+    name: Do the job on the runner
+    needs: start-runner # required to start the main job when the runner is ready
+    runs-on: ${{ needs.start-runner.outputs.label }} # run the job on the newly created runner
+    steps:
+      - name: Hello World
         run: |
-          # Your test commands here
-          echo "Running tests..."
-
-      - name: Deploy to staging
-        if: ${{ inputs.deploy_env == 'int30' }}
-        run: |
-          # Your deployment steps to staging environment
-          echo "Deploying to staging...${{ inputs.deploy_env }}"
+          echo "This is the first command"
+          whoami
+          
+  stop-runner:
+    name: Stop self-hosted EC2 runner
+    needs:
+      - start-runner # required to get output from the start-runner job
+      - do-the-job # required to wait when the main job is done
+    runs-on: ubuntu-latest
+    if: ${{ always() }} # required to stop the runner even if the error happened in the previous jobs
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ASIAXEFPMSBJOIOVUX6I
+          aws-secret-access-key: e6oK12WegGLq/a487ODG+JsQNNcWnjoI2/CiYwQZ
+          aws-session-token: IQoJb3JpZ2luX2VjELv//////////wEaCXVzLWVhc3QtMSJGMEQCIHMHhtU++pU5pkITXzTqD1ebffUw8tCQYqCB7sEzkL5qAiBxuHM1od3gRB/rDQrh13XZ5Upe4syS8ldWIji/bBQI1ir6AgiT//////////8BEAIaDDQ4OTk5NDA5NjcyMiIM+Bbhfjx17UnsF+lCKs4CMPkms2Ue0lUbBFi53FNW5rcRmAcLh25M0eZHNKGW4/csS8cGpIm+4M8ctUx9xE5txvnZ8cGjL0exe+7/2/cc3Z1qCGCa5zY4QiW+H4Csdd+tmKBWtvjBDM8IK2Gs3jMM+YLEUbRyqc1CbTNHFpdI0iQ8Y0qLVyZJxPKAFR8Xjo4OpTKSdHRUDRo2kr6Rs7uTpfuGV4s2ZR5jaingLILZbU+eKNyUmE+VzW+77cVyjfnY7SnCp8K2GT6pCa4QQ/C24yYg7863AuUpDujrXxwZI1JTLQBfna7W+e379rIMVF1mBDH0UCMQ7Y1gWPi1iWsS18+q/jui4/dEx2QMJWvXmVY3YzH3qAyYh3sLcfnsmL6gnWR+E9mNq5wGJFFnB2SD2A/WboJ+NvqjmmlNIXisMhSNB+uDkoOmsosw+kLIznC/LfloSczed2Aap0OZjTC/hbSuBjqoAUlgBPv0Cl4NYFpOLMBAA5BUbs0UvnGtEi4zZhWA+XO1iwEvIXEl7GnBIN5mwAyFMO0+pWCxetvTxGz8K1sW1H7T9bs2w7aL9cFQ9Msg2F86KsUgZ5ejpL180hBP5SboV1+NX8XX8GNNtS4XQ6M9VQuFcSrLT9G2/Ppej6W6pI1RGw+o6PYcjf9AJy1OvKQ2I3Gcv+DtMF7xgsAyPgOlbhaEEin5v8rnOQ==
+          aws-region: us-east-1
+      - name: Stop EC2 runner
+        uses: machulav/ec2-github-runner@v2
+        with:
+          mode: stop
+          github-token: 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
+          label: ${{ needs.start-runner.outputs.label }}
+          ec2-instance-id: ${{ needs.start-runner.outputs.ec2-instance-id }}
