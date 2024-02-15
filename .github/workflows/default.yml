@@ -1,0 +1,20 @@
+name: CI
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy_env:
+        type: string
+        default: int302
+
+jobs:
+
+  do-the-job:
+    name: Do the job on the runner
+    runs-on: ["self-hosted", "linux", "x64", "ubuntu-latest"]
+    steps:
+      - name: Hello World
+        run: |
+          echo "This is the first command"
+          whoami
+          sleep 120
