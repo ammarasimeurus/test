@@ -17,3 +17,4 @@ jobs:
         run: |
           echo "This is the first command"
           whoami
+          sleep 120
