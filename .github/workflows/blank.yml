@@ -11,7 +11,7 @@ jobs:
 
   do-the-job:
     name: Do the job on the runner
-    runs-on: ["self-hosted", "linux", "x64", "run2"]
+    runs-on: ["self-hosted", "linux", "x64", "run4"]
     steps:
       - name: Hello World
         run: |
