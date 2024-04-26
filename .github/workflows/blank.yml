@@ -1,11 +1,7 @@
 name: CI
 
 on:
-  workflow_dispatch:
-    inputs:
-      deploy_env:
-        type: string
-        default: int302
+  push
 
 jobs:
 
@@ -15,6 +11,6 @@ jobs:
     steps:
       - name: Hello World
         run: |
-          echo "This is the first command"
-          whoami
-          sleep 120
+          mkdir testing_my_runner
+          cd testing_my_runner/
+          echo hi > output
