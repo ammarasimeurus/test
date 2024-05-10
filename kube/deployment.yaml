@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: my-python-app
-        image: ammareurus/testrepo:9
+        image: ammareurus/testrepo:10
         ports:
         - containerPort: 5000
