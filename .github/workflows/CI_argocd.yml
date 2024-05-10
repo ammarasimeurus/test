@@ -31,7 +31,7 @@ jobs:
     - name: Update deployment.yaml
       run: |
         sed -i "s#your-dockerhub-username/my-python-app:latest#ammareurus/testrepo:${{ github.run_number }}#" template.yaml
-        cp template.yaml /kube/deployment.yaml
+        cp template.yaml kube/deployment.yaml
         
     - name: Commit and push changes
       run: |
