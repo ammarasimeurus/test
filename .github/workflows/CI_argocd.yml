@@ -1,0 +1,41 @@
+name: Build and Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ammareurus
+        password: abc123456789
+
+    - name: Build Docker image
+      run: |
+        docker build -t ammareurus/testrepo .
+        docker tag ammareurus/testrepo:latest ammareurus/testrepo:latest
+        docker tag ammareurus/testrepo:latest ammareurus/testrepo:${{ github.run_number }}
+
+    - name: Push Docker image to Docker Hub
+      run: |
+        docker push ammareurus/testrepo:latest
+        docker push ammareurus/testrepo:${{ github.run_number }}
+
+    - name: Update deployment.yaml
+      run: |
+        sed -i "s#your-dockerhub-username/my-python-app:latest#ammareurus/testrepo:${{ github.run_number }}#" deployment.yaml
+
+    - name: Commit and push changes
+      run: |
+        git config --global user.name 'ammarasimeurus'
+        git config --global user.email 'ammar.asim@eurustechnologies.com'
+        git add deployment.yaml
+        git commit -m "Update deployment.yaml with new image tag"
+        git push
