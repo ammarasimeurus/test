@@ -30,8 +30,9 @@ jobs:
 
     - name: Update deployment.yaml
       run: |
-        sed -i "s#latest#ammareurus/testrepo:${{ github.run_number-1 }}#ammareurus/testrepo:${{ github.run_number }}#" kube/deployment.yaml
-
+        sed -i "s#your-dockerhub-username/my-python-app:latest#ammareurus/testrepo:${{ github.run_number }}#" template.yaml
+        cp template.yaml /kube/deployment.yaml
+        
     - name: Commit and push changes
       run: |
         git config --global user.name 'ammarasimeurus'
